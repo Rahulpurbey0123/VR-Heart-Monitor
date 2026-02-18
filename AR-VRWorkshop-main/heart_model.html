@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>VR Medical Heart System - LEVEL MAX</title>
+<script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+</head>
+
+<body>
+<a-scene>
+
+<!-- SOUND -->
+<a-assets>
+<audio id="heartbeatSound"
+src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_8d57e4d2c2.mp3?filename=heartbeat-110039.mp3">
+</audio>
+</a-assets>
+
+<!-- CAMERA -->
+<a-entity position="0 1.6 0">
+<a-camera>
+<a-cursor raycaster="objects: .clickable"></a-cursor>
+</a-camera>
+</a-entity>
+
+<!-- LIGHT -->
+<a-light type="ambient" intensity="1"></a-light>
+<a-light type="directional" position="2 4 5"></a-light>
+
+<!-- FLOOR -->
+<a-plane rotation="-90 0 0" width="30" height="30" color="#111"></a-plane>
+
+<!-- HEART -->
+<a-entity id="heart" position="0 2 -5"
+animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; loop: true; dur: 800">
+
+<a-sphere radius="0.7" position="-0.6 0 0" color="#b30000"></a-sphere>
+<a-sphere radius="0.7" position="0.6 0 0" color="#b30000"></a-sphere>
+<a-cone radius-bottom="1.2"
+radius-top="0"
+height="1.8"
+position="0 -1 0"
+rotation="0 0 180"
+color="#990000">
+</a-cone>
+
+<!-- Artery Highlight -->
+<a-cylinder id="artery"
+radius="0.15"
+height="1"
+position="0 0.9 0"
+color="red">
+</a-cylinder>
+
+</a-entity>
+
+<!-- ECG -->
+<a-box id="ecg"
+position="0 1 -5"
+depth="0.1"
+height="0.1"
+width="4"
+color="lime"
+animation="property: position; from: -2 1 -5; to: 2 1 -5; dir: alternate; loop: true; dur: 800">
+</a-box>
+
+<!-- MEDICAL PANEL -->
+<a-plane position="0 4.5 -5"
+width="5"
+height="2"
+color="#001d3d"
+opacity="0.8">
+</a-plane>
+
+<a-text id="statusText"
+value="Status: Healthy"
+position="0 5 -5"
+align="center"
+color="cyan"
+width="6">
+</a-text>
+
+<a-text id="bpmText"
+value="BPM: 72"
+position="0 4.6 -5"
+align="center"
+color="white"
+width="5">
+</a-text>
+
+<a-text id="healthText"
+value="Health: 100%"
+position="0 4.2 -5"
+align="center"
+color="lime"
+width="5">
+</a-text>
+
+<!-- BUTTONS -->
+<a-box class="clickable" id="btnHealthy"
+position="-2 0.5 -3"
+depth="0.3" height="0.5" width="1"
+color="green"></a-box>
+
+<a-box class="clickable" id="btnModerate"
+position="0 0.5 -3"
+depth="0.3" height="0.5" width="1"
+color="orange"></a-box>
+
+<a-box class="clickable" id="btnCritical"
+position="2 0.5 -3"
+depth="0.3" height="0.5" width="1"
+color="red"></a-box>
+
+<a-text value="Healthy"
+position="-2 1 -3"
+align="center" width="3"></a-text>
+
+<a-text value="Moderate"
+position="0 1 -3"
+align="center" width="3"></a-text>
+
+<a-text value="Critical"
+position="2 1 -3"
+align="center" width="3"></a-text>
+
+<a-sky color="#000814"></a-sky>
+
+<a-entity id="soundPlayer"
+sound="src: #heartbeatSound; autoplay: false; loop: true">
+</a-entity>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+const heart = document.querySelector("#heart");
+const artery = document.querySelector("#artery");
+const statusText = document.querySelector("#statusText");
+const bpmText = document.querySelector("#bpmText");
+const healthText = document.querySelector("#healthText");
+const ecg = document.querySelector("#ecg");
+const soundPlayer = document.querySelector("#soundPlayer");
+
+function updateSystem(status, bpm, health, color, speed){
+
+heart.querySelectorAll("a-sphere, a-cone").forEach(p=>{
+p.setAttribute("color", color);
+});
+
+artery.setAttribute("color", health < 60 ? "darkred" : "red");
+
+heart.setAttribute("animation",
+"property: scale; to: 1.2 1.2 1.2; dir: alternate; loop: true; dur: " + speed);
+
+ecg.setAttribute("animation",
+"property: position; from: -2 1 -5; to: 2 1 -5; dir: alternate; loop: true; dur: " + speed);
+
+statusText.setAttribute("value","Status: "+status);
+bpmText.setAttribute("value","BPM: "+bpm);
+healthText.setAttribute("value","Health: "+health+"%");
+
+soundPlayer.components.sound.playSound();
+}
+
+document.querySelector("#btnHealthy").addEventListener("click",()=>{
+updateSystem("Healthy",72,100,"#b30000",800);
+});
+
+document.querySelector("#btnModerate").addEventListener("click",()=>{
+updateSystem("Moderate",95,65,"orange",500);
+});
+
+document.querySelector("#btnCritical").addEventListener("click",()=>{
+updateSystem("Critical",130,40,"darkred",300);
+});
+
+});
+</script>
+
+</a-scene>
+</body>
+</html>
